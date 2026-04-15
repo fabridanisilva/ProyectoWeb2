@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Crear Cuenta</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-light d-flex align-items-center" style="height: 100vh;">
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-5">
+                <div class="card shadow-sm p-4">
+                    <h3 class="text-center mb-4">Crear una Cuenta</h3>
+                    <form id="form-registro">
+                        <div class="mb-3">
+                            <label>Nombre</label>
+                            <input type="text" id="reg-nombre" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label>Apellido</label>
+                            <input type="text" id="reg-apellido" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label>Email</label>
+                            <input type="email" id="reg-email" class="form-control" required>
+                        </div>
+                        <div class="mb-4">
+                            <label>Contraseña</label>
+                            <input type="password" id="reg-password" class="form-control" required>
+                        </div>
+                        <button type="button" onclick="registrar()" class="btn btn-primary w-100">Registrarme</button>
+                    </form>
+                    <div class="text-center mt-3">
+                        <small>¿Ya tenés cuenta? <a href="login.html">Iniciá sesión</a></small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+</body>
+</html>
