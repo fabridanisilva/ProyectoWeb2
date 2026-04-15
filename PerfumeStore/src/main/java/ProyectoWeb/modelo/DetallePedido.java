@@ -1,5 +1,6 @@
 package ProyectoWeb.modelo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,6 +25,7 @@ public class DetallePedido {
 
     @ManyToOne
     @JoinColumn(name = "pedidio_id")
+    @JsonIgnore
     private Pedido pedido;
 
     @ManyToOne

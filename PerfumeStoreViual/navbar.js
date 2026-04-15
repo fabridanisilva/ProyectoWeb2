@@ -12,9 +12,11 @@ function cargarMenuNavegacion() {
         const usuario = JSON.parse(usuarioString);
         contenedorMenu.innerHTML = `
             <span class="text-light me-3">Hola, <b>${usuario.nombre}</b></span>
+            <a href="historial.html" class="btn btn-outline-info btn-sm">Mis Pedidos 📦</a>
             <a href="carrito.html" class="btn btn-outline-light btn-sm">Carrito 🛒</a>
             <button onclick="cerrarSesion()" class="btn btn-danger btn-sm">Salir</button>
         `;
+        
     } else {
         // 2B. SI NO HAY USUARIO: Mostramos los botones de login y registro
         contenedorMenu.innerHTML = `

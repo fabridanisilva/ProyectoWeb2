@@ -20,10 +20,64 @@
 
     <div class="container">
         <h2 class="text-center mb-4">Nuestro Catálogo</h2>
+
+        <div class="row mb-4 bg-white p-3 rounded shadow-sm">
+            <div class="col-md-4 mb-2">
+                <label class="form-label font-weight-bold">Filtrar por Marca</label>
+                <select id="filtro-marca" class="form-select" onchange="aplicarFiltros()">
+                    <option value="Todas">Todas las marcas</option>
+                    </select>
+            </div>
+            
+            <div class="col-md-5 mb-2">
+                <label class="form-label font-weight-bold">
+                    Precio Máximo: <span class="text-success" id="label-precio">$100.000</span>
+                </label>
+                <input type="range" id="filtro-precio" class="form-range" min="10000" max="150000" step="5000" value="100000" oninput="aplicarFiltros()">
+            </div>
+        </div>
         <div id="contenedor-perfumes" class="row">
             </div>
     </div>
+    <footer class="bg-dark text-light pt-5 pb-3 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h5 class="font-weight-bold mb-3">Perfumes "El Brother"</h5>
+                    <p class="text-secondary">
+                        Las mejores fragancias árabes y alternativas de diseñador. 
+                        Calidad, duración y el mejor precio del mercado para que dejes huella vayas donde vayas.
+                    </p>
+                </div>
+                
+                <div class="col-md-4 mb-4">
+                    <h5 class="mb-3">Enlaces Rápidos</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="index.html" class="text-secondary text-decoration-none">🏠 Catálogo</a></li>
+                        <li class="mb-2"><a href="carrito.html" class="text-secondary text-decoration-none">🛒 Mi Carrito</a></li>
+                        <li class="mb-2"><a href="login.html" class="text-secondary text-decoration-none">👤 Iniciar Sesión</a></li>
+                        <li class="mb-2"><a href="registro.html" class="text-secondary text-decoration-none">📝 Crear Cuenta</a></li>
+                    </ul>
+                </div>
 
+                <div class="col-md-4 mb-4">
+                    <h5 class="mb-3">Contacto</h5>
+                    <ul class="list-unstyled text-secondary">
+                        <li class="mb-2">📍 Tilisarao, San Luis</li>
+                        <li class="mb-2">📱 +54 9 266 123-4567</li>
+                        <li class="mb-2">✉️ ventas@elbrother.com</li>
+                        <li class="mb-2">🕒 Lun a Sáb - 9:00 a 20:00</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <hr class="border-secondary">
+            
+            <div class="text-center text-secondary mt-3">
+                <small>&copy; 2026 Perfumes "El Brother". Todos los derechos reservados. Desarrollado con ☕ y código.</small>
+            </div>
+        </div>
+    </footer>
     <script src="script.js"></script>
     <script src="navbar.js"></script>
 </body>

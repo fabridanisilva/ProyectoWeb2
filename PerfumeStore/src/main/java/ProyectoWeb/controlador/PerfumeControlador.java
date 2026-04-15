@@ -34,4 +34,6 @@ public class PerfumeControlador {
     public ResponseEntity<List<Perfume>> obtenerPerfumePorMarca(@PathVariable String marca) {
         return ResponseEntity.ok(perfumeServicio.obtenerPorMarca(marca));
     }
+
+
 }

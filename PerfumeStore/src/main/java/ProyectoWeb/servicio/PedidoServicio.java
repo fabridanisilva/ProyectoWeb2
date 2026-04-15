@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class PedidoServicio {
@@ -65,5 +66,11 @@ public class PedidoServicio {
         }
         pedido.setTotal(totalPedido);
         return pedidoRepositorio.save(pedido);
+    }
+
+    public List<Pedido> obtenerPedidosPorIdUsuario(Long id){
+
+        return pedidoRepositorio.findByUsuarioId(id);
+
     }
 }
