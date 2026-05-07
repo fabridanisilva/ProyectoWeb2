@@ -33,6 +33,7 @@ public class Publicacion {
     @JoinColumn(name = "id_usuario", nullable = false)
     private Usuario autor;
 
+    private String estado = "ACTIVA";
     // una publicacion tiene una o mas imagenes
     @OneToMany(mappedBy = "publicacion", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Imagen> imagenes;

@@ -72,8 +72,12 @@ public class Usuario {
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "seguidores",
-            joinColumns = @JoinColumn(name = "id_seguido"),
-            inverseJoinColumns = @JoinColumn(name = "id_seguidor")
+            joinColumns = @JoinColumn(name = "id_seguidor"),//yo
+            inverseJoinColumns = @JoinColumn(name = "id_seguido") // el otro
     )
+    private List<Usuario> seguidos;
+
+    // Usuarios que me siguen a mí
+    @ManyToMany(mappedBy = "seguidos")
     private List<Usuario> seguidores;
 }

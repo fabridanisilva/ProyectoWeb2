@@ -17,13 +17,13 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class DenunciaServicio {
 
-    private DenunciaRepositorio denunciaRepositorio;
+    private final DenunciaRepositorio denunciaRepositorio;
 
-    ImagenRepositorio imagenRepositorio;
+    private final ImagenRepositorio imagenRepositorio;
 
-    UsuarioRepositorio usuarioRepositorio;
+    private final UsuarioRepositorio usuarioRepositorio;
 
-    PublicacionRepositorio publicacionRepositorio;
+    private  final PublicacionRepositorio publicacionRepositorio;
 
     @Transactional
     public Denuncia denunciarImagen(Long idImagen,Long idUsuario, String motivo,String justificacion) {
@@ -61,5 +61,7 @@ public class DenunciaServicio {
         }
 
         usuarioRepositorio.save(usuario);
+        publicacionRepositorio.delete(publicacion);
+        System.out.println("Publicación " + idPublicacion + " eliminada permanentemente.");
     }
 }

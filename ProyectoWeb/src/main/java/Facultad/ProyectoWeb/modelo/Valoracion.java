@@ -11,7 +11,9 @@ import lombok.NoArgsConstructor;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "valoraciones")
+@Table(name = "valoraciones", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"id_imagen", "id_usuario"})
+})
 public class Valoracion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

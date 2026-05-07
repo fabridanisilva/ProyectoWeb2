@@ -19,24 +19,28 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class ValoracionServicio {
 
-    private ValoracionRepositorio valoracionRepositorio;
+    private final ValoracionRepositorio valoracionRepositorio;
 
-    private UsuarioRepositorio usuarioRepositorio;
+    private final UsuarioRepositorio usuarioRepositorio;
 
-    private ImagenRepositorio imagenRepositorio;
+    private final ImagenRepositorio imagenRepositorio;
 
     @Transactional
     public Valoracion agregarValoracion(Long idImagen, Long idUsuario, int puntaje){
         Imagen imagen = imagenRepositorio.findById(idImagen).orElseThrow(()->new RuntimeException("imagen inexistente"));
         Usuario usuario = usuarioRepositorio.findById(idUsuario).orElseThrow(()->new RuntimeException("usuario inexistente"));
 
+        if (puntaje < 1 || puntaje > 5) {
+            throw new IllegalArgumentException("El puntaje debe estar entre 1 y 5 estrellas.");
+        }
+
         //no puede valorizar el autor
-        if (imagen.getPublicacion().getAutor().getIdUsuario() == usuario.getIdUsuario()){
+        if (imagen.getPublicacion().getAutor().getIdUsuario().equals(usuario.getIdUsuario())){
             throw new RuntimeException("No puedes valorar tu propia publicacion");
         }
         //no puedes valorisar ams de una ves
         if (valoracionRepositorio.existsByImagenAndUsuario(imagen, usuario)){
-            throw new RuntimeException("Ya valraste esta imagen");
+            throw new RuntimeException("Ya valoraste esta imagen");
         }
 
         Valoracion valoracion = new Valoracion();
@@ -57,6 +61,12 @@ public class ValoracionServicio {
         resultado.put("promedio", promedio != null ? Math.round(promedio *  10.0)/10.0 : 0.0);
         return resultado;
     }
+    @Transactional()
+    public long obtenerTotalValoraciones(Long idImagen) {
+        Imagen imagen = imagenRepositorio.findById(idImagen)
+                .orElseThrow(() -> new RuntimeException("Imagen no encontrada"));
 
+        return valoracionRepositorio.countByImagen(imagen);
+    }
 
 }

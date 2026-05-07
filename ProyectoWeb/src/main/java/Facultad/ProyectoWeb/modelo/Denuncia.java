@@ -16,7 +16,7 @@ import java.awt.*;
 public class Denuncia {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idEtiqueta;
+    private Long idDenuncia;
 
     @NotBlank
     @Column(nullable = false)

@@ -12,13 +12,13 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class UsuarioServicio {
-    private UsuarioRepositorio usuarioRepositorio;
-    private PublicacionRepositorio publicacionRepositorio;
+    private final UsuarioRepositorio usuarioRepositorio;
+    private final PublicacionRepositorio publicacionRepositorio;
 
 
     @Transactional
     public void seguirUsuario(Long idUsuarioActual, Long idUsuarioASeguir) {
-        if (idUsuarioActual == idUsuarioASeguir) {
+        if (idUsuarioActual.equals(idUsuarioASeguir)) {
             throw new IllegalArgumentException("El usuario no puede serguirse asi mismo");
         }
 
