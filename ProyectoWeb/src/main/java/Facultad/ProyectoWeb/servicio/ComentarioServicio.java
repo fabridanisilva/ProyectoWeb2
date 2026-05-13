@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ComentarioServicio {
     private final ComentarioRepositorio comentarioRepositorio;
-
+    private final NotificacionServicio notificacionServicio;
     private final UsuarioRepositorio usuarioRepositorio;
     private final PublicacionRepositorio publicacionRepositorio;
 
@@ -34,6 +34,12 @@ public class ComentarioServicio {
         comentario.setTexto(texto);
         comentario.setUsuario(usuario);
         comentario.setPublicacion(publicacion);
+
+        notificacionServicio.crearNotificacion(
+                idUsuario, // El que comenta
+                publicacion.getAutor().getIdUsuario(), // El dueño de la foto
+                "NUEVO_COMENTARIO"
+        );
 
         return comentarioRepositorio.save(comentario);
 

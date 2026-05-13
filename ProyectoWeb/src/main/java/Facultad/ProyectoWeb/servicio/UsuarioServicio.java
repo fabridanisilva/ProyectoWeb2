@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 public class UsuarioServicio {
     private final UsuarioRepositorio usuarioRepositorio;
     private final PublicacionRepositorio publicacionRepositorio;
-
+    private final NotificacionServicio notificacionServicio;
 
     @Transactional
     public void seguirUsuario(Long idUsuarioActual, Long idUsuarioASeguir) {
@@ -31,6 +31,7 @@ public class UsuarioServicio {
 
         usuarioASeguir.getSeguidores().add(usuarioActual);
         usuarioRepositorio.save(usuarioASeguir);
+        notificacionServicio.crearNotificacion(idUsuarioActual, idUsuarioASeguir, "NUEVO_SEGUIDOR");
     }
 
     @Transactional

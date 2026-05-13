@@ -22,7 +22,7 @@ public class ValoracionServicio {
     private final ValoracionRepositorio valoracionRepositorio;
 
     private final UsuarioRepositorio usuarioRepositorio;
-
+    private final NotificacionServicio notificacionServicio;
     private final ImagenRepositorio imagenRepositorio;
 
     @Transactional
@@ -47,6 +47,12 @@ public class ValoracionServicio {
         valoracion.setImagen(imagen);
         valoracion.setUsuario(usuario);
         valoracion.setPuntaje(puntaje);
+
+        notificacionServicio.crearNotificacion(
+                idUsuario, // El que dejó las estrellas
+                imagen.getPublicacion().getAutor().getIdUsuario(), // El dueño de la foto
+                "NUEVA_VALORACION"
+        );
         return valoracionRepositorio.save(valoracion);
     }
 

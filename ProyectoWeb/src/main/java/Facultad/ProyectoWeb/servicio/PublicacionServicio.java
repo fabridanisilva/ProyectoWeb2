@@ -23,10 +23,10 @@ public class PublicacionServicio {
 
 
     @Transactional
-    private Publicacion crearPublicacion(Long idAutor, String titulo, String descripcion, String urlArchivo, List<String> nombresEtiquetas,List<String> urlsImagenes) {
+    public Publicacion crearPublicacion(Long idAutor, String titulo, String descripcion, List<String> nombresEtiquetas,List<String> urlsImagenes) {
         Usuario usuario = usuarioRepositorio.findById(idAutor).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        if (urlArchivo == null || urlsImagenes.isEmpty()) {
+        if (urlsImagenes == null || urlsImagenes.isEmpty()) {
             throw new IllegalArgumentException("El archivo no puede ser nulo.");
         }
         if (nombresEtiquetas == null || nombresEtiquetas.isEmpty()) {
