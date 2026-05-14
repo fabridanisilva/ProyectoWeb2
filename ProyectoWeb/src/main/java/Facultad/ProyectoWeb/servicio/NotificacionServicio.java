@@ -46,7 +46,7 @@ public class NotificacionServicio {
     public void marcarComoLeida(Long idNotificacion, Long idUsuario){
         Notificacion notificacion = notificacionRepositorio.findById(idNotificacion).orElseThrow(()-> new RuntimeException("Notificacion no encontrado"));
 
-        if (!notificacion.getReceptor().equals(idUsuario)){
+        if (!notificacion.getReceptor().getIdUsuario().equals(idUsuario)){
             throw new RuntimeException("No puedes modificar esta notificacion");
         }
 
