@@ -57,4 +57,17 @@ public class PublicacionControlador {
         }
     }
 
+
+    // 5. Publicaciones de la gente que sigo
+    // URL: /api/publicaciones/feed/1
+    @GetMapping("/feed/{idUsuario}")
+    public ResponseEntity<List<Publicacion>> obtenerFeed(@PathVariable Long idUsuario) {
+        try {
+            List<Publicacion> feed = publicacionServicio.obtenerFeedDeUsuario(idUsuario);
+            return ResponseEntity.ok(feed);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
 }

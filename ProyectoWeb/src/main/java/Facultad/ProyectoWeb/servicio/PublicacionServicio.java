@@ -7,7 +7,8 @@ import Facultad.ProyectoWeb.modelo.Usuario;
 import Facultad.ProyectoWeb.repositorio.EtiquetaRepositorio;
 import Facultad.ProyectoWeb.repositorio.PublicacionRepositorio;
 import Facultad.ProyectoWeb.repositorio.UsuarioRepositorio;
-import jakarta.transaction.Transactional;
+
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -76,5 +77,10 @@ public class PublicacionServicio {
 
         publicacion.setComentariosCerrados(cerrarComentarios);
         publicacionRepositorio.save(publicacion);
+    }
+//obtenemos las publicaciones de las personas que seguimos
+    @Transactional(readOnly = true)
+    public List<Publicacion> obtenerFeedDeUsuario(Long idUsuario) {
+        return publicacionRepositorio.findFeedByUsuarioId(idUsuario);
     }
 }

@@ -1,6 +1,7 @@
 package Facultad.ProyectoWeb.controlador;
 
 import Facultad.ProyectoWeb.DTO.UsuarioDTO;
+import Facultad.ProyectoWeb.DTO.UsuarioLoginDTO;
 import Facultad.ProyectoWeb.modelo.Usuario;
 import Facultad.ProyectoWeb.repositorio.UsuarioRepositorio;
 import Facultad.ProyectoWeb.servicio.UsuarioServicio;
@@ -84,5 +85,23 @@ public class UsuarioControlador {
         return usuarioRepositorio.findByUsername(username)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    // login del usuario
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody UsuarioLoginDTO DTO){
+        try {
+            Usuario usuario = usuarioRepositorio.findByUsername(DTO.getUsername()).orElseThrow(()-> new RuntimeException("Usuario no encontrado"));
+
+            if (!usuario.getPassword().equals(DTO.getPassword())){
+                // comparamos para ver si si le erro la contraseña
+                return ResponseEntity.badRequest().body("Contraseña incorrecta");
+            }
+            //si todo esta bien devolvemos el usuario
+            return ResponseEntity.ok(usuario);
+
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body("Error al obtener usuario: " + e.getMessage());
+        }
     }
 }
