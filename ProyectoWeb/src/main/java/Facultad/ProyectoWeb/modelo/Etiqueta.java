@@ -1,5 +1,6 @@
 package Facultad.ProyectoWeb.modelo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -22,6 +23,7 @@ public class Etiqueta {
     @Column(nullable = false,unique = true)
     private String nombre;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "etiquetas",fetch = FetchType.LAZY)
     private List<Publicacion> publicaciones;
 }

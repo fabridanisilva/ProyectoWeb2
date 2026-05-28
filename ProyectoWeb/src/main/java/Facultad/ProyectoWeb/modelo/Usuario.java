@@ -1,5 +1,7 @@
 package Facultad.ProyectoWeb.modelo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
@@ -55,6 +57,7 @@ public class Usuario {
     private int publicacionesBajadas = 0;
 
     // Relación: Un usuario puede tener muchas publicaciones
+    @JsonIgnore
     @OneToMany(mappedBy = "autor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Publicacion> publicaciones;
 
@@ -69,6 +72,7 @@ public class Usuario {
     private List<Publicacion> publicacionesFavoritas;
 
     // Relación recursiva: Un usuario sigue a muchos usuarios, y es seguido por muchos
+    @JsonIgnoreProperties({"seguidos", "seguidores", "publicaciones", "password"})
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "seguidores",
@@ -78,6 +82,7 @@ public class Usuario {
     private List<Usuario> seguidos;
 
     // Usuarios que me siguen a mí
+    @JsonIgnoreProperties({"seguidos", "seguidores", "publicaciones", "password"})
     @ManyToMany(mappedBy = "seguidos")
     private List<Usuario> seguidores;
 }

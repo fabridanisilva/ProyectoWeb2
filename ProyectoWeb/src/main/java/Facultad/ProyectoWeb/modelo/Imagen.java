@@ -1,5 +1,6 @@
 package Facultad.ProyectoWeb.modelo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,6 +22,7 @@ public class Imagen {
     private String urlArchivo;
 
     // Relación: Muchas imágenes pertenecen a una publicación
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_publicacion", nullable = false)
     private Publicacion publicacion;

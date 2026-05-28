@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function cargarMisPublicaciones() {
         try {
-            // Le pegamos al endpoint que armaste en PublicacionControlador
+            // este endpoint nos va a devolver las publicaciones de las personas que seguimos
             const respuesta = await fetch(`http://localhost:8080/api/publicaciones/feed/${idUsuario}`);
             
             if (respuesta.ok) {
@@ -38,32 +38,45 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function mostrarPublicaciones(publicaciones) {
         const contenedor = document.getElementById("contenedorPublicaciones");
-        contenedor.innerHTML = ""; // Limpiamos "Cargando..."
+        contenedor.innerHTML = ""; 
 
         if (publicaciones.length === 0) {
             contenedor.innerHTML = `
                 <div class="alert alert-info text-center">
-                    Aún no tenés ninguna publicación. ¡Es hora de subir la primera!
+                    Aún no hay publicaciones para mostrar.
                 </div>`;
             return;
         }
 
-        // Si hay publicaciones, las dibujamos (por ahora solo dibujamos el texto)
         publicaciones.forEach(pub => {
+            
+            // Revisamos si Spring Boot nos mandó la lista de entidades "imagenes"
+            let urlFoto = "https://via.placeholder.com/600x400?text=Foto+no+disponible"; 
+            
+            if (pub.imagenes && pub.imagenes.length > 0) {
+                // Entra acá si devuelve la entidad Imagen (lo normal en Spring Boot)
+                urlFoto = pub.imagenes[0].urlArchivo; 
+            } else if (pub.urlsImagenes && pub.urlsImagenes.length > 0) {
+                // Entra acá por las dudas si armaste un DTO de respuesta
+                urlFoto = pub.urlsImagenes[0];
+            }
+
+            // ARMAMOS LA TARJETA CON LA IMAGEN
             const card = document.createElement("div");
-            card.className = "card mb-4 shadow-sm";
+            // Si estás en perfil.js, la clase de la card era "col-md-6 mb-4" en vez de "card mb-4 shadow-sm"
+            card.className = "card mb-4 shadow-sm"; 
             card.innerHTML = `
+                <img src="${urlFoto}" class="card-img-top" alt="Publicación" style="max-height: 500px; object-fit: cover;">
                 <div class="card-body">
                     <h5 class="card-title fw-bold">${pub.titulo}</h5>
                     <p class="card-text">${pub.descripcion}</p>
-                    <small class="text-muted">ID Publicación: ${pub.idPublicacion}</small>
                 </div>
             `;
             contenedor.appendChild(card);
         });
     }
 
-    
+    //subir foto
     const formPublicacion = document.getElementById("formPublicacion");
 
     formPublicacion.addEventListener("submit", async (e) => {

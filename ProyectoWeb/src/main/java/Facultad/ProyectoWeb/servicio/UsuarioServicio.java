@@ -16,21 +16,33 @@ public class UsuarioServicio {
     private final PublicacionRepositorio publicacionRepositorio;
     private final NotificacionServicio notificacionServicio;
 
+
     @Transactional
     public void seguirUsuario(Long idUsuarioActual, Long idUsuarioASeguir) {
         if (idUsuarioActual.equals(idUsuarioASeguir)) {
-            throw new IllegalArgumentException("El usuario no puede serguirse asi mismo");
+            throw new IllegalArgumentException("El usuario no puede seguirse a sí mismo");
         }
 
-        Usuario usuarioActual = usuarioRepositorio.findById(idUsuarioActual).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-        Usuario usuarioASeguir = usuarioRepositorio.findById(idUsuarioASeguir).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        Usuario usuarioActual = usuarioRepositorio.findById(idUsuarioActual)
+                .orElseThrow(() -> new RuntimeException("Usuario actual no encontrado"));
+        Usuario usuarioASeguir = usuarioRepositorio.findById(idUsuarioASeguir)
+                .orElseThrow(() -> new RuntimeException("Usuario a seguir no encontrado"));
 
-        if (usuarioASeguir.getSeguidores().contains(usuarioActual)) {
+        // 1. esto es re importante: Validamos contra la lista DUEÑA (seguidos) del usuario actual
+        if (usuarioActual.getSeguidos().contains(usuarioASeguir)) {
             throw new IllegalArgumentException("Ya sigues a este usuario");
         }
 
+        // 2. Modificamos el lado DUEÑO (la lista 'seguidos' de quien aprieta el botón)
+        usuarioActual.getSeguidos().add(usuarioASeguir);
+
+        // 3. Sincronizamos el lado inverso en memoria (buena práctica para que impacte al instante)
         usuarioASeguir.getSeguidores().add(usuarioActual);
-        usuarioRepositorio.save(usuarioASeguir);
+
+        // 4. Guardamos al usuarioActual (Al ser el dueño, Hibernate ejecuta el INSERT en MySQL)
+        usuarioRepositorio.save(usuarioActual);
+
+        // 5. Notificación automática
         notificacionServicio.crearNotificacion(idUsuarioActual, idUsuarioASeguir, "NUEVO_SEGUIDOR");
     }
 
