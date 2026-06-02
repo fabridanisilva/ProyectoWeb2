@@ -58,9 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         </h5>
                         <p class="text-muted mb-0">${usuario.nombre} ${usuario.apellido}</p>
                     </div>
-                    <button class="btn btn-outline-primary btn-sm btn-seguir" data-id="${usuario.idUsuario}">
-                        Seguir
-                    </button>
+                    
                 </div>
             `;
             contenedorResultados.appendChild(card);

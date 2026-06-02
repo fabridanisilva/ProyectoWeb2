@@ -19,7 +19,13 @@ public class ValoracionControlador {
 
     @PostMapping
     public ResponseEntity<?> agregarValoracion(@RequestBody ValoracionRequestDTO valoracion){
-        return ResponseEntity.ok(valoracionServicio.agregarValoracion(valoracion.getIdImagen(),valoracion.getIdUsuario(),valoracion.getPuntaje()));
+        try{
+            return ResponseEntity.ok(valoracionServicio.agregarValoracion(valoracion.getIdImagen(),valoracion.getIdUsuario(),valoracion.getPuntaje()));
+
+        }catch(Exception ex){
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
+
     }
 
     // en este endpoint es para obtener el promedio y la cantidad de valoraciones
