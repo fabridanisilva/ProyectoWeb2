@@ -87,46 +87,235 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function mostrarPublicaciones(publicaciones) {
-        const contenedor = document.getElementById("contenedorPerfilPublicaciones");
-        contenedor.innerHTML = ""; 
+        const contenedorPublicaciones = document.getElementById("contenedorPerfilPublicaciones");
+        contenedorPublicaciones.innerHTML = "";
 
+        // Actualizamos el contador de la cabecera
         document.getElementById("countPublicaciones").textContent = publicaciones.length;
 
         if (publicaciones.length === 0) {
-            contenedor.innerHTML = `
-                <div class="alert alert-info text-center">
-                    Aún no hay publicaciones para mostrar.
-                </div>`;
+            contenedorPublicaciones.innerHTML = `<div class="col-12"><div class="alert alert-light text-center border">Este usuario aún no tiene publicaciones.</div></div>`;
             return;
         }
 
         publicaciones.forEach(pub => {
-            // MAGIA PARA ATRAPAR LA URL:
-            // Revisamos si Spring Boot nos mandó la lista de entidades "imagenes"
-            let urlFoto = "https://via.placeholder.com/600x400?text=Foto+no+disponible"; // Imagen por defecto
+            const divCol = document.createElement("div");
+            divCol.className = "col-md-6 mb-4";
             
+            // Atrapamos la URL y el ID de la imagen
+            let urlFoto = "https://via.placeholder.com/400x300?text=Sin+Imagen";
+            let idImagen = null;
+
             if (pub.imagenes && pub.imagenes.length > 0) {
-                // Entra acá si devuelve la entidad Imagen (lo normal en Spring Boot)
-                urlFoto = pub.imagenes[0].urlArchivo; 
+                urlFoto = pub.imagenes[0].urlArchivo;
+                idImagen = pub.imagenes[0].id; // Rescatamos el ID de la imagen para las estrellas
             } else if (pub.urlsImagenes && pub.urlsImagenes.length > 0) {
-                // Entra acá por las dudas si armaste un DTO de respuesta
                 urlFoto = pub.urlsImagenes[0];
             }
 
-            // ARMAMOS LA TARJETA CON LA IMAGEN
-            const card = document.createElement("div");
-            // Si estás en perfil.js, la clase de la card era "col-md-6 mb-4" en vez de "card mb-4 shadow-sm"
-            card.className = "card mb-4 shadow-sm"; 
-            card.innerHTML = `
-                <img src="${urlFoto}" class="card-img-top" alt="Publicación" style="max-height: 500px; object-fit: cover;">
-                <div class="card-body">
-                    <h5 class="card-title fw-bold">${pub.titulo}</h5>
-                    <p class="card-text">${pub.descripcion}</p>
+            // Armamos la tarjeta y le sumamos las estrellas si hay una imagen válida
+            divCol.innerHTML = `
+                <div class="card shadow-sm h-100">
+                    <img src="${urlFoto}" class="card-img-top" alt="Foto publicación" style="height: 250px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold">${pub.titulo}</h5>
+                        <p class="card-text text-truncate">${pub.descripcion}</p>
+                        
+                        ${idImagen ? `
+                        <hr>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="estrellas-container" data-id-imagen="${idImagen}">
+                                <span class="estrella fs-5 text-muted" style="cursor: pointer;" data-valor="1">★</span>
+                                <span class="estrella fs-5 text-muted" style="cursor: pointer;" data-valor="2">★</span>
+                                <span class="estrella fs-5 text-muted" style="cursor: pointer;" data-valor="3">★</span>
+                                <span class="estrella fs-5 text-muted" style="cursor: pointer;" data-valor="4">★</span>
+                                <span class="estrella fs-5 text-muted" style="cursor: pointer;" data-valor="5">★</span>
+                            </div>
+                            <div class="text-muted small">
+                                <span id="promedio-perfil-${idImagen}" class="fw-bold text-warning">0.0</span> 
+                                (<span id="cantidad-perfil-${idImagen}">0</span>)
+                            </div>
+                        </div>
+                        ` : ''}
+
+                        <hr>
+                        <div class="comentarios-section mt-2">
+                            <h6 class="fw-bold mb-2" style="font-size: 0.9rem;">Comentarios</h6>
+                            
+                            <div id="lista-comentarios-perfil-${pub.idPublicacion}" class="mb-3" style="max-height: 120px; overflow-y: auto; font-size: 0.85rem;">
+                                <div class="text-center text-muted small">Cargando comentarios...</div>
+                            </div>
+                            
+                            ${pub.comentariosCerrados ? 
+                                `<div class="alert alert-secondary small py-1 text-center mb-0">Comentarios cerrados.</div>` 
+                                : 
+                                `<div class="input-group input-group-sm">
+                                    <input type="text" id="input-comentario-perfil-${pub.idPublicacion}" class="form-control" placeholder="Escribir...">
+                                    <button class="btn btn-outline-primary btn-comentar-perfil" data-id-pub="${pub.idPublicacion}">Enviar</button>
+                                </div>`
+                            }
+                        </div>
+                    </div>
                 </div>
             `;
-            contenedor.appendChild(card);
+            
+            contenedorPublicaciones.appendChild(divCol);
+
+            // Si atrapamos un ID, mandamos a buscar su promedio a la base de datos
+            if (idImagen) {
+                cargarEstadisticas(idImagen);
+                cargarComentariosPerfil(pub.idPublicacion);
+            }
         });
     }
+    //  cargar comentarios
+    async function cargarComentariosPerfil(idPublicacion) {
+        const contenedor = document.getElementById(`lista-comentarios-perfil-${idPublicacion}`);
+        if (!contenedor) return;
+
+        try {
+            const respuesta = await fetch(`http://localhost:8080/api/comentarios/publicacion/${idPublicacion}`);
+            if (respuesta.ok) {
+                const comentarios = await respuesta.json();
+                
+                if (comentarios.length === 0) {
+                    contenedor.innerHTML = `<div class="text-muted small text-center">Sé el primero en comentar.</div>`;
+                    return;
+                }
+
+                contenedor.innerHTML = comentarios.map(com => `
+                    <div class="mb-1">
+                        <span class="fw-bold text-dark me-1">@${com.usuario.username}</span>
+                        <span class="text-secondary">${com.texto}</span>
+                    </div>
+                `).join("");
+                
+                contenedor.scrollTop = contenedor.scrollHeight;
+            } else {
+                contenedor.innerHTML = `<div class="text-danger small text-center">Error al cargar.</div>`;
+            }
+        } catch (error) {
+            console.error("Error cargando comentarios:", error);
+            contenedor.innerHTML = `<div class="text-danger small text-center">Error de conexión.</div>`;
+        }
+    }
+
+    
+    // logica de valoraciones
+    
+
+    async function cargarEstadisticas(idImagen) {
+        try {
+            const respuesta = await fetch(`http://localhost:8080/api/valoraciones/estadisticas/${idImagen}`);
+            if (respuesta.ok) {
+                const stats = await respuesta.json();
+                const promedioLimpio = stats.promedio ? stats.promedio.toFixed(1) : "0.0";
+                
+                // Usamos los IDs con "-perfil-" para actualizar la tarjeta correcta
+                document.getElementById(`promedio-perfil-${idImagen}`).textContent = promedioLimpio;
+                document.getElementById(`cantidad-perfil-${idImagen}`).textContent = stats.cantidad;
+            }
+        } catch (error) {
+            console.error("Error al cargar estadísticas", error);
+        }
+    }
+
+    document.addEventListener("click", async (e) => {
+        if (e.target.classList.contains("estrella")) {
+            const puntaje = e.target.getAttribute("data-valor");
+            const contenedorEstrellas = e.target.closest(".estrellas-container");
+            const idImagen = contenedorEstrellas.getAttribute("data-id-imagen");
+            
+            const idUsuarioLogueado = localStorage.getItem("usuarioId");
+
+            if (!idUsuarioLogueado) {
+                alert("Debes iniciar sesión para valorar.");
+                return;
+            }
+
+            try {
+                const valoracionDTO = {
+                    idImagen: parseInt(idImagen),
+                    idUsuario: parseInt(idUsuarioLogueado),
+                    puntaje: parseInt(puntaje)
+                };
+
+                const respuesta = await fetch(`http://localhost:8080/api/valoraciones`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(valoracionDTO)
+                });
+
+                if (respuesta.ok) {
+                    const estrellas = contenedorEstrellas.querySelectorAll(".estrella");
+                    estrellas.forEach((star, index) => {
+                        if (index < puntaje) {
+                            star.classList.replace("text-muted", "text-warning");
+                        } else {
+                            star.classList.replace("text-warning", "text-muted");
+                        }
+                    });
+
+                    // Recargamos los números
+                    cargarEstadisticas(idImagen);
+                    
+                } else {
+                    const errorText = await respuesta.text();
+                    alert("No se pudo valorar: " + errorText);
+                }
+            } catch (error) {
+                console.error("Error al enviar valoración:", error);
+            }
+        }
+
+
+        //mandar comentario
+        if (e.target.classList.contains("btn-comentar-perfil")) {
+            const idPublicacion = e.target.getAttribute("data-id-pub");
+            const inputElement = document.getElementById(`input-comentario-perfil-${idPublicacion}`);
+            const texto = inputElement.value.trim();
+            const idUsuarioLogueado = localStorage.getItem("usuarioId");
+
+            if (!idUsuarioLogueado) {
+                alert("Debes iniciar sesión para comentar.");
+                return;
+            }
+
+            if (!texto) return;
+
+            try {
+                const comentarioDTO = {
+                    idUsuario: parseInt(idUsuarioLogueado),
+                    idPublicacion: parseInt(idPublicacion),
+                    texto: texto
+                };
+
+                const respuesta = await fetch(`http://localhost:8080/api/comentarios`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(comentarioDTO)
+                });
+
+                if (respuesta.ok) {
+                    inputElement.value = "";
+                    cargarComentariosPerfil(idPublicacion); // Recargamos para ver el nuevo
+                } else {
+                    const errorText = await respuesta.text();
+                    alert("No se pudo enviar el comentario: " + errorText);
+                }
+            } catch (error) {
+                console.error("Error al enviar comentario:", error);
+            }
+        }
+    });
+
+
+
+
 
     // 4. LÓGICA DEL BOTÓN SEGUIR (Reutilizada)
     async function seguirUsuario(idASeguir, botonHTML) {

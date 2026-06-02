@@ -10,6 +10,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ComentarioServicio {
@@ -57,5 +59,14 @@ public class ComentarioServicio {
         }
         comentarioRepositorio.delete(comentario);
 
+    }
+
+
+    public List<Comentario> obtenerComentariosPorPublicacion(Long idPublicacion) {
+        // Verificamos que la publicación exista
+        publicacionRepositorio.findById(idPublicacion)
+                .orElseThrow(() -> new RuntimeException("Publicación no encontrada"));
+
+        return comentarioRepositorio.findByPublicacion_IdPublicacion(idPublicacion);
     }
 }

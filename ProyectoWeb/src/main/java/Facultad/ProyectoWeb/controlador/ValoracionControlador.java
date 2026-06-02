@@ -13,8 +13,9 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/valoraciones")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class ValoracionControlador {
-    ValoracionServicio valoracionServicio;
+    private final ValoracionServicio valoracionServicio;
 
     @PostMapping
     public ResponseEntity<?> agregarValoracion(@RequestBody ValoracionRequestDTO valoracion){
